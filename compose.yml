@@ -1,0 +1,21 @@
+# Joins Mealie's network so the two containers reach each other by name:
+#   converter -> http://mealie:9000   (Mealie API)
+#   Mealie    -> http://tm6-converter:8000/convert/<secret>   (Recipe Action)
+services:
+  tm6-converter:
+    build: .
+    image: mealie-tm6-converter:local
+    container_name: tm6-converter
+    restart: unless-stopped
+    env_file: .env
+    networks: [mealie]
+    # No published port: only Mealie (and you, via `docker exec`) can reach it.
+    # Uncomment to test from the host:
+    # ports: ["127.0.0.1:8765:8000"]
+    labels:
+      - com.centurylinklabs.watchtower.enable=false   # locally built image
+
+networks:
+  mealie:
+    name: mealie_default
+    external: true
