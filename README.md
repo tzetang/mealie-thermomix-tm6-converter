@@ -38,6 +38,13 @@ docker compose up -d --build
 docker logs -f tm6-converter
 ```
 
+**Or deploy with Portainer:** create a stack from this Git repository.
+- Compose path: `compose.yml`
+- Authentication: a GitHub token with read access to this repo
+- Environment variables: add them from `.env.example`. "Load variables from .env file" does this in one step.
+
+Portainer builds the image on the host.
+
 **Mealie needs one env change.** Mealie blocks outbound requests to private addresses. In the Portainer `mealie` stack, add the following to the `mealie` service and redeploy:
 
 ```yaml

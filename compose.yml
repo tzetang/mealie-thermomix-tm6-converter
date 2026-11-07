@@ -1,17 +1,32 @@
 # Joins Mealie's network so the two containers reach each other by name:
 #   converter -> http://mealie:9000   (Mealie API)
 #   Mealie    -> http://tm6-converter:8000/convert/<secret>   (Recipe Action)
+#
+# Variables come from a local .env (docker compose CLI) or from the stack's
+# environment variables (Portainer). See .env.example for descriptions.
 services:
   tm6-converter:
     build: .
     image: mealie-tm6-converter:local
     container_name: tm6-converter
     restart: unless-stopped
-    env_file: .env
+    environment:
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?set WEBHOOK_SECRET}
+      MEALIE_API_TOKEN: ${MEALIE_API_TOKEN:?set MEALIE_API_TOKEN}
+      MEALIE_URL: ${MEALIE_URL:-http://mealie:9000}
+      MEALIE_PUBLIC_URL: ${MEALIE_PUBLIC_URL:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:?set LLM_BASE_URL}
+      LLM_API_KEY: ${LLM_API_KEY:-not-needed}
+      LLM_MODEL: ${LLM_MODEL:?set LLM_MODEL}
+      LLM_JSON_MODE: ${LLM_JSON_MODE:-json_object}
+      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.2}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-300}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-}
+      TM6_TAG: ${TM6_TAG:-tm6}
+      AUTO_CONVERT_ENABLED: ${AUTO_CONVERT_ENABLED:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
     networks: [mealie]
     # No published port: only Mealie (and you, via `docker exec`) can reach it.
-    # Uncomment to test from the host:
-    # ports: ["127.0.0.1:8765:8000"]
     labels:
       - com.centurylinklabs.watchtower.enable=false   # locally built image
 
